@@ -1,6 +1,7 @@
 # ktor-metrics-extension
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![Jitpack](https://jitpack.io/v/otkmnb2783/ktor-metrics-extension.svg)](https://jitpack.io/#otkmnb2783/ktor-metrics-extension)
 
 This ktor-metrics-extension is an extension library that exposes metrics collected
 using [Kotor's MicroMeter](https://ktor.io/docs/micrometer-metrics.html) at the default Prometheus endpoint.
