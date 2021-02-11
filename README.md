@@ -28,3 +28,53 @@ implementation("io.micrometer:micrometer-registry-prometheus:$micrometerVersion"
 implementation("io.prometheus:simpleclient_httpserver:$prometheusVersion")
 implementation("com.github.otkmnb2783:ktor-metrics-extension:<this_library_current_version>")
 ```
+
+## Usage
+
+```kotlin
+
+fun main(args: Array<String>): Unit = EngineMain.main(args)
+
+@OptIn(KtorExperimentalLocationsAPI::class)
+@Suppress("unused", "UNUSED_PARAMETER")
+@kotlin.jvm.JvmOverloads
+fun Application.module(testing: Boolean = false) {
+
+    install(Locations) {
+    }
+
+    install(CallLogging) {
+        level = Level.INFO
+        filter { call -> call.request.path().startsWith("/") }
+    }
+
+    val prometheus = PrometheusMeterRegistry(PrometheusConfig.DEFAULT)
+
+    install(MicrometerMetrics) {
+        registry = prometheus
+        distributionStatisticConfig = DistributionStatisticConfig.DEFAULT
+        meterBinders = listOf(
+            JvmMemoryMetrics(),
+            JvmGcMetrics(),
+            ProcessorMetrics(),
+            JvmThreadMetrics()
+        )
+    }
+
+    install(PrometheusExporterServer) {
+        registry = prometheus
+        runServer = true
+    }
+
+    routing {
+        get("/") {
+            call.respondText("HELLO WORLD!", contentType = ContentType.Text.Plain)
+        }
+    }
+}
+```
+
+```bash
+curl -XGET http://localhost:8080/metrics
+curl -XGET http://localhost:9090/metrics
+```
